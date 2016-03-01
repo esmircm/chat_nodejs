@@ -1,4 +1,4 @@
-# chat_nodejs
+# Chat_nodejs
 Chat en tiempo real con Node.js
 
 #Para correrlo en linux (debian 8):
