@@ -1,0 +1,57 @@
+body {
+  background: #f1eee5;
+}
+.contenedorprincipal {
+  width: 900px;
+  margin: 0 auto;
+}
+h1 {
+  font-family: 'Fjalla One', sans-serif;
+}
+p {
+  font-family: 'Open Sans', sans-serif;
+  font-size: 14px;
+  font-weight: 300;
+}
+header h1 {
+  width: 100%;
+  margin: 10px 0 15px 0;
+  text-transform: uppercase;
+}
+.contenedorinfo {
+  float: left;
+  width: 70%;
+}
+.contenedorsidebar {
+  float: left;
+  width: 30%;
+}
+.info {
+  background: #1d3859;
+  border-radius: 10px;
+  margin: 0px 10px;
+  padding: 5px 15px;
+  color: #fff;
+}
+#sidebar {
+  background: #7da336;
+  border-radius: 10px;
+  margin: 0px 10px;
+  padding: 5px 15px;
+  color: #fff;
+}
+footer {
+  position: relative;
+}
+.contenedorpie {
+  float: left;
+  width: 100%;
+  margin: 5px 0;
+  border-radius: 10px;
+  background: #0d81d5;
+  color: #fff;
+}
+.contenedorpie p {
+  padding: 5px 15px;
+  color: #dfdfdf;
+}

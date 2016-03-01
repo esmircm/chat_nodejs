@@ -1,0 +1,269 @@
+<html>
+    <head>
+        <title>
+            Node.js chat
+        </title>
+
+
+
+        <script src="https://code.jquery.com/jquery.js"></script>
+
+        <!-- Latest compiled and minified CSS -->
+        <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css">
+
+        <!-- Optional theme -->
+        <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap-theme.min.css">
+
+        <!-- Latest compiled and minified JavaScript -->
+        <script src="//netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script>
+
+        <style>
+
+            body{
+                background: url(http://mymaplist.com/img/parallax/back.png);
+                background-color: #444;
+                background: url(http://mymaplist.com/img/parallax/pinlayer2.png),url(http://mymaplist.com/img/parallax/pinlayer1.png),url(http://mymaplist.com/img/parallax/back.png);    
+            }
+
+            .vertical-offset-100{
+                padding-top:100px;
+            }
+
+            #contentWrap{
+                display: none;
+            }
+
+            #chatWrap{
+                float: left;
+            }       	
+
+            #chat{
+                position: relative;
+                width: 100%;
+                float:left;
+                min-height:100px;
+                height: 90%;
+                overflow: auto;
+            }
+        </style>
+
+    </head>
+    <body>
+
+        <div class="container">
+
+
+            <div class="page-header">
+                <h1> <font color="white"> Node.js Chat <small> Banavih </small></font></h1>
+            </div>
+
+
+            <div class="row vertical-offset-100" id="nickWrap">
+                <div class="col-md-4 col-md-offset-4">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h3 class="panel-title">Ingrese su Usuario</h3>
+                        </div>
+                        <div class="panel-body">
+                            <form accept-charset="UTF-8" role="form">
+                                <fieldset>
+                                    <div class="form-group">
+                                        <input class="form-control" placeholder="Usuario" id="nickname" type="text">
+                                    </div>
+
+                                    <input class="btn btn-lg btn-success btn-block" type="submit" id="setNick" value="Ingrese">
+                                </fieldset>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="alert fade in alert-danger alert-dismissable col-md-4 col-md-offset-4" data-dismiss="alert" id="login-error" style="display:none;">
+                <button type="button" class="close" id="closeAlert">×</button>
+                El nombre de usuario ya existe.
+            </div>
+            <div class="alert fade in alert-danger alert-dismissable col-md-4 col-md-offset-4" data-dismiss="alert" id="login-error2" style="display:none;">
+                <button type="button" class="close" id="closeAlert">×</button>
+                El nombre de usuario no puede estar vacio.
+            </div>
+
+
+
+
+
+
+
+            <div id="contentWrap" class="row" style="height: 70%;">
+                <div class="col-md-2"></div>
+                <!--<div class="well">-->
+                <div id="chatWrap"  class="col-md-6">
+                    <div class="panel panel-success">
+                        <div class="panel-heading">Chat</div>
+                        <div id="chat" class="panel-body well"></div>
+
+                    </div>
+
+                    <div>
+                        <form id="send-message" class="input-group" style="text-align:center;margin:0 auto;">
+                            <input id="message" class="form-control input-lg" type="text">
+                            <span class="input-group-btn">
+                                <button class="btn btn-lg btn-primary" type="submit">Enviar</button>
+                            </span>
+                        </form>
+                    </div>
+                </div>
+
+
+                <div class="col-md-2">
+                    <div class="panel panel-info">
+                        <div class="panel-heading">
+                            Usuarios
+                        </div>
+                        <div id="users" class="panel-body"></div>
+                    </div>
+                </div>
+                <!--<div class="rows" id="error1" style="display:none">-->
+
+                <div class="col-md-2" id="msj1" style="display:none">
+
+
+                    <div class="alert alert-warning" role="alert" id="sms1">
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+                        <span class="sr-only" >Error:</span>
+                    </div>
+
+                </div>
+                <div class="col-md-2" id="msj2" style="display:none">
+
+
+                    <div class="alert alert-danger" role="alert" id="sms2">
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+                        <span class="sr-only" >Error:</span>
+                    </div>
+
+                </div>
+<!--                <div class="col-md-2" id="users" style="display:none">
+
+
+                    <div class="panel panel-success">
+                        <div class="panel-heading">Chat</div>
+                        <div id="chat" class="panel-body well"></div>
+
+                    </div>
+
+                </div>-->
+                <!--</div>-->
+
+            </div>
+
+
+            <!--</div>-->
+
+        </div>
+        <script src="/socket.io/socket.io.js"></script>
+        <script>
+            jQuery(function ($) {
+                var socket = io.connect();
+                var messageForm = $('#send-message');
+                var messageBox = $('#message');
+                var buttonSend = $('#send');
+
+                var nickForm = $('#setNick');
+                var nickBox = $('#nickname');
+                var users = $('#users');
+                var closeAlert = $('#closeAlert');
+                var chat = $('#chat');
+
+
+
+
+                nickForm.click(function (e) { // Validacion del lado cliente
+                    e.preventDefault();
+
+//                        if (nickBox == ""){
+//                         alert("holaa");return false;  
+//                        }
+                            
+                        
+                    socket.emit('newUser', nickBox.val(), function (data) {
+//                        console.log(data);
+                        if (data == undefined) {
+                            $("#login-error2").show(); //si usuario esta vacio manda una alerta
+
+                        } else if (data == true) {
+                            $('#nickWrap').hide();
+                            $('#contentWrap').show(); // si usuario no existe muestra el chat 
+                            $("#login-error").hide(); 
+                            $("#login-error2").hide();
+                        } else {
+                            $("#login-error").show(); //si usuario existe manda una alerta
+                        }
+                    });
+                    nickBox.val('');
+                });
+
+                closeAlert.click(function (e) {
+                    $("#login-error").hide();
+                });
+
+                messageForm.submit(function (e) {
+                    e.preventDefault();
+                    if (messageBox.val() != '')
+                        socket.emit('sendMessage', messageBox.val());
+                    messageBox.val('');
+                });
+
+                socket.on('newMessage', function (data) {
+                    chat.append('<br><b>' + data.nick + ":</b> " + data.msg + "<br>");
+                });
+
+                socket.on('usernames', function (data) { // foreach que muestra los nombres de usuarios en la pantalla de usuarios
+                    var html = '';
+                    for (var username in data) {
+                        html += username + '<br/>';
+                    }
+                    users.html(html);
+                });
+
+
+                socket.on('usuarioRegistrado', function (data) { // funcion para mostrar mensaje en pantalla de usuario conectado
+
+                    var milisegundos = 5000;
+//                    console.log(data);
+
+                    $('#msj1').show();
+                    $('#sms1').html('Se ha conectado <b>' + data + '</b>');
+                    chat.append('<br>Se ha conectado <b>' + data + '</b><br>');
+
+                    setInterval(function () {
+                        $('#msj1').hide();
+                    }, milisegundos);
+
+                });
+
+                socket.on('usuarioDeslogueado', function (data) { // funcion para mostrar mensaje en pantalla de usuario desconectado
+
+                    var milisegundos = 5000;
+                    console.log(data.nick);
+
+                    $('#msj2').show();
+                    $('#sms2').html('Se ha desconectado <b>' + data.nick + '</b>');
+                    chat.append('<br>Se ha desconectado <b>' + data.nick + '</b><br>');
+
+                    setInterval(function () {
+                        $('#msj2').hide();
+                    }, milisegundos);
+
+                });
+
+
+            });
+
+        </script>
+
+
+
+    </body>
+</html>
