@@ -4,6 +4,7 @@ Chat en tiempo real con Node.js
 #Para correrlo en linux (debian 8):
 
 aptitud install npm
+
 aptitud install nodejs
 
 #iniciar el servidor desde la consola:
